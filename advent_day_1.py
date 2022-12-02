@@ -2,6 +2,8 @@
 #
 # advent_day_1.py
 #
+# usage: advent_day_1.py input_file_1.txt [ input_file_2.txt ... ]
+#
 
 import fileinput
 
