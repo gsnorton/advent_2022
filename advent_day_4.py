@@ -26,13 +26,13 @@ def _main():
     overlap_count = 0
 
     for line in fileinput.input():
-        _range1 = line.strip().split(',')[0]
-        range1 = range(int(_range1.split('-')[0]),
-                       int(_range1.split('-')[1]) + 1)
+        _range = line.strip().split(',')[0]
+        range1 = range(int(_range.split('-')[0]),
+                       int(_range.split('-')[1]) + 1)
 
-        _range2 = line.strip().split(',')[1]
-        range2 = range(int(_range2.split('-')[0]),
-                       int(_range2.split('-')[1]) + 1)
+        _range = line.strip().split(',')[1]
+        range2 = range(int(_range.split('-')[0]),
+                       int(_range.split('-')[1]) + 1)
 
         if is_sublist(range1, range2) or is_sublist(range2, range1):
             contained_count += 1
