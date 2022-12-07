@@ -18,10 +18,11 @@ def _main():
     for line in fileinput.input():
         if fileinput.isfirstline():
 
-            # Start drawing
+            # Start drawing and empty stacks
 
             drawing_done = False
             drawing = [line]
+            stacks = []
 
         elif not line.strip():
 
@@ -32,8 +33,6 @@ def _main():
         elif not drawing_done:
 
             # Process the label line and build the stacks
-
-            stacks = []
 
             for label in _NUM_MATCH.finditer(line):
                 stacks.append(collections.deque())
