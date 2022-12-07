@@ -16,7 +16,6 @@ _NUM_MATCH = re.compile('[0-9]+')
 def _main():
 
     for line in fileinput.input():
-
         if fileinput.isfirstline():
 
             # Start drawing
@@ -29,12 +28,6 @@ def _main():
             # Blank line indicates end of drawing
 
             drawing_done = True
-
-        elif not drawing_done and not _NUM_MATCH.search(line):
-
-            # Add a line of crates to the drawing
-
-            drawing.append(line)
 
         elif not drawing_done:
 
@@ -54,6 +47,8 @@ def _main():
                     crate = level[stack_index + 1]
                     if crate.split():
                         stacks[-1].append(crate)
+
+            drawing.append(line)
 
         else:
 
@@ -86,7 +81,7 @@ def _main():
             for stack in stacks:
                 try:
                     print stack[0],
-                except:
+                except IndexError:
                     print "-",
 
             print
