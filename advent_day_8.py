@@ -7,14 +7,13 @@
 
 import fileinput
 import heapq
+import collections
 
 # -----------------------------------------------------------------------------
 
 def look_at_line(line, ignore_col=None):
     visible = 0
     cols = []
-
-    print ignore_col,
 
     for _i, tree in enumerate(line):
 
@@ -24,26 +23,23 @@ def look_at_line(line, ignore_col=None):
             if _q[0] == tree:
                 heapq.heappop(_q)
             elif tree in _q:
-                if not ignore_col or _i in ignore_col:
+                if not ignore_col or _i not in ignore_col:
                     visible += 1
                     cols.append(_i)
+
             while _q[0] < tree:
                 heapq.heappop(_q)
 
         except NameError:
             _q = [tree] # Create the queue
 
-    print visible, cols
-
     return visible, cols
 
 def process_line(line):
 
-    print line
-
     # Look from left
 
-    left_visible, cols_l = look_at_line(line[:-1])
+    left_visible, cols = look_at_line(line[:-1])
 
     # Look from right
 
@@ -51,14 +47,18 @@ def process_line(line):
 
     try:
         right_visible, cols_r = look_at_line(line_rev[:-1],
-                                             [(len(line) - 1 - cols_l[-1])])
+                                             [(len(line) - 1 - cols[-1])])
 
     except IndexError:
         right_visible, cols_r = look_at_line(line_rev[:-1])
 
-    # XXXX
+    for col in cols_r:
+        cols.append(len(line) - 1 - col)
 
-    return left_visible + right_visible
+    return left_visible + right_visible, sorted(cols)
+
+def process_col(col):
+    print col
 
 def _main():
 
@@ -69,7 +69,8 @@ def _main():
         if fileinput.isfirstline():
             line_index = 0
 
-            cols_up = [list(tree) for tree in line]
+            cols_look_up = [collections.deque(tree) for tree in line]
+            ignore_line_col = []
             dim = len(line)
 
             visible = 4*(dim - 1)
@@ -77,15 +78,34 @@ def _main():
         elif not line_index == (dim - 2):
             line_index += 1
 
-            line_visible = process_line(line)
+            for _i, tree in enumerate(line):
+                cols_look_up[_i].appendleft(tree)
+
+            line_visible, cols = process_line(line)
             visible += line_visible
 
-            # XXXX
+            ignore_line_col.extend([(line_index, col) for col in cols])
+
+            print line_index, line, line_visible, cols
 
         else:
-            pass # XXXX
+            for _i, tree in enumerate(line[1:-1]):
 
-    print visible
+                # XXXX Is there a cleaner way to build col?
+                col = [tree]
+                for _t in cols_look_up[_i+1]:
+                    col.append(_t)
+
+                line_visible, rows = process_line(col)
+
+                print _i+1, "".join(col), line_visible, rows
+
+                # XXXX Could this be cleaner?
+                for _r in rows:
+                    if not (len(col) - 1 - _r, _i+1) in ignore_line_col:
+                        visible += 1
+
+            print visible
 
 if __name__ == '__main__':
     _main()
